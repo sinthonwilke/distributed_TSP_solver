@@ -10,8 +10,8 @@ HOST_ADDR = socket.gethostbyname(HOSTNAME)
 
 
 def handle_client(client_socket, client_addr):
-    message = "node" + str(ADDR.index(HOST_ADDR)) + " " + \
-        "is connected from " + HOST_ADDR
+    message = "received node" + str(ADDR.index(HOST_ADDR)) + \
+        " from " + HOST_ADDR
     client_socket.send(message.encode())
     client_socket.close()
 
