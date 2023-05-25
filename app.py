@@ -1,6 +1,6 @@
 import socket
 import threading
-from typing import List, Dict, Tuple, Literal
+from typing import List, Dict, Tuple
 from collections import deque
 import sys
 import time
@@ -52,6 +52,9 @@ def handle_client(client_socket, client_addr):
     path, total_distance = tsp_bfs(start_city)
 
     if path:
+        # Exclude the starting city from the path
+        path = path[1:]
+
         message = f"Optimal path: {' -> '.join(path)}\nTotal distance: {total_distance}"
     else:
         message = "No solution found"
