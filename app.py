@@ -6,7 +6,8 @@ import sys
 import time
 
 PORT = 8000
-ADDR = ('node0', 'node1', 'node2', 'node3')  # node0, node1, node2, node3
+ADDR = ('172.16.238.10', '172.16.238.11', '172.16.238.12',
+        '172.16.238.13') # node0, node1, node2, node3
 ADDR_INDEX = 0
 HOSTNAME = socket.gethostname()
 HOST_ADDR = socket.gethostbyname(HOSTNAME)
