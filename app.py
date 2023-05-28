@@ -1,26 +1,25 @@
 import socket
 import threading
-from typing import List, Dict, Tuple
+from typing import List, Tuple
 from collections import deque
 import sys
 import time
 
 PORT = 8000
-ADDR = ('172.16.238.10', '172.16.238.11', '172.16.238.12',
-        '172.16.238.13') # node0, node1, node2, node3
+ADDR = ('172.16.238.10', '172.16.238.11', '172.16.238.12', '172.16.238.13')  # node0, node1, node2, node3
 ADDR_INDEX = 0
 HOSTNAME = socket.gethostname()
 HOST_ADDR = socket.gethostbyname(HOSTNAME)
 
-cities = {
-    'city0': {'city1': 10, 'city2': 15, 'city3': 20},
-    'city1': {'city0': 10, 'city2': 35, 'city3': 25},
-    'city2': {'city0': 15, 'city1': 35, 'city3': 30},
-    'city3': {'city0': 20, 'city1': 25, 'city2': 30}
-}
+cities = [
+    [0, 10, 15, 20],
+    [10, 0, 35, 25],
+    [15, 35, 0, 30],
+    [20, 25, 30, 0]
+]
 
 
-def tsp_bfs(start_city: str) -> Tuple[List[str], int]:
+def tsp_bfs(start_city: int) -> Tuple[List[int], int]:
     n = len(cities)
     min_distance = sys.maxsize
     optimal_path = []
@@ -39,24 +38,21 @@ def tsp_bfs(start_city: str) -> Tuple[List[str], int]:
                 optimal_path = path + [start_city]
 
         # Explore neighboring cities
-        for neighbor, distance in cities[current_city].items():
+        for neighbor in range(n):
             if neighbor not in path:
                 new_path = path + [neighbor]
-                new_distance = total_distance + distance
+                new_distance = total_distance + cities[current_city][neighbor]
                 queue.append((neighbor, new_path, new_distance))
 
     return optimal_path, min_distance
 
 
 def handle_client(client_socket, client_addr):
-    start_city = client_socket.recv(1024).decode()
+    start_city = int(client_socket.recv(1024).decode())
     path, total_distance = tsp_bfs(start_city)
 
     if path:
-        # Exclude the starting city from the path
-        path = path[1:]
-
-        message = f"Optimal path: {' -> '.join(path)}\nTotal distance: {total_distance}"
+        message = f"Optimal path: {' -> '.join(map(str, path))}\nTotal distance: {total_distance + cities[path[-1]][start_city]}"
     else:
         message = "No solution found"
 
@@ -84,8 +80,8 @@ def client(addr):
     try:
         client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         client_socket.connect((addr, PORT))
-        start_city = 'city0'  # Specify the start city here
-        client_socket.send(start_city.encode())
+        start_city = ADDR.index(HOST_ADDR)  # Use the index of the current address as the start city
+        client_socket.send(str(start_city).encode())
         message = client_socket.recv(1024).decode()
         print(message)
         client_socket.close()
