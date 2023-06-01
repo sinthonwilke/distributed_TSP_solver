@@ -42,7 +42,7 @@ def tsp_bfs(start_city: int) -> Tuple[List[int], int]:
             if neighbor not in path:
                 new_path = path + [neighbor]
                 new_distance = total_distance + cities[current_city][neighbor]
-                queue.append((neighbor, new_path, new_distance))
+                queue.append((neighbor, new_path, new_distance)) # type: ignore
 
     return optimal_path, min_distance
 
